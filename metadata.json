@@ -1,0 +1,6 @@
+{
+  "name": "M2A",
+  "description": "M2A Mobile App & PWA mirroring marketing2advertising.com with Live TV channels, interactive Multi Apps, 15 free games, live Blogger feed sync, Firimu, and jobs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
