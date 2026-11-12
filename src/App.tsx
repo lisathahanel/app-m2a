@@ -45,19 +45,19 @@ export default function App() {
   // Load initial data
   useEffect(() => {
     // Fetch channels
-    fetch('/data/channels.json')
+    fetch(`${import.meta.env.BASE_URL}data/channels.json`)
       .then((res) => res.json())
       .then((data) => setChannels(data))
       .catch((err) => console.warn('Channels load error:', err));
 
     // Fetch apps
-    fetch('/data/apps.json')
+    fetch(`${import.meta.env.BASE_URL}data/apps.json`)
       .then((res) => res.json())
       .then((data) => setApps(data))
       .catch((err) => console.warn('Apps load error:', err));
 
     // Fetch games
-    fetch('/data/games.json')
+    fetch(`${import.meta.env.BASE_URL}data/games.json`)
       .then((res) => res.json())
       .then((data) => setGames(data))
       .catch((err) => console.warn('Games load error:', err));
