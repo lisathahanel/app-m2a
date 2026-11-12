@@ -19,7 +19,6 @@ import { AppsScreen } from './components/screens/AppsScreen';
 import { GamesScreen } from './components/screens/GamesScreen';
 import { JobsScreen } from './components/screens/JobsScreen';
 import { PageScreen } from './components/screens/PageScreen';
-import { FlutterGuideModal } from './components/screens/FlutterGuideModal';
 import { ToastContainer } from './components/Toast';
 import { AppTool, BlogPost, Channel, GameItem, MovieItem, TabType } from './types';
 
@@ -38,7 +37,6 @@ export default function App() {
 
   // Dialog & drawer states
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isFlutterModalOpen, setIsFlutterModalOpen] = useState(false);
   const [isInterstitialOpen, setIsInterstitialOpen] = useState(false);
 
   // Load initial data
@@ -136,13 +134,6 @@ export default function App() {
         onClose={() => setIsDrawerOpen(false)}
         onSelectTab={handleSelectTab}
         onOpenPage={handleOpenPage}
-        onOpenFlutterGuide={() => setIsFlutterModalOpen(true)}
-      />
-
-      {/* Flutter & Native APK Export Modal */}
-      <FlutterGuideModal
-        isOpen={isFlutterModalOpen}
-        onClose={() => setIsFlutterModalOpen(false)}
       />
 
       {/* Main Viewport Container */}
