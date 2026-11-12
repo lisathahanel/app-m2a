@@ -14,6 +14,7 @@ import { AdMobInterstitial } from './components/AdMobInterstitial';
 import { HomeScreen } from './components/screens/HomeScreen';
 import { TVScreen } from './components/screens/TVScreen';
 import { FirimuScreen } from './components/screens/FirimuScreen';
+import { MoviesSeriesScreen } from './components/screens/MoviesSeriesScreen';
 import { BlogsScreen } from './components/screens/BlogsScreen';
 import { AppsScreen } from './components/screens/AppsScreen';
 import { GamesScreen } from './components/screens/GamesScreen';
@@ -190,6 +191,8 @@ export default function App() {
                 onTriggerAd={triggerInterstitialAd}
               />
             )}
+
+            {currentTab === 'catalogue' && <MoviesSeriesScreen />}
 
             {currentTab === 'blogs' && (
               <BlogsScreen
