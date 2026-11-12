@@ -4,8 +4,8 @@ import { Download, Share2, PlusSquare, X } from 'lucide-react';
 import { showToast } from './Toast';
 
 export const PWAInstallButton: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
-  const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
-  const [showIOSGuide, setShowIOSGuide] = useState(false);
+  const { isInstallable, isInstalled, isIOS, isAndroid, install } = usePWAInstall();
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
 
   if (isInstalled) {
     return null;
@@ -26,12 +26,12 @@ export const PWAInstallButton: React.FC<{ compact?: boolean }> = ({ compact = fa
     );
   }
 
-  // iOS Safari flow
-  if (isIOS) {
+  // iOS and Android manual installation when the browser does not expose a prompt.
+  if (isIOS || isAndroid) {
     return (
       <>
         <button
-          onClick={() => setShowIOSGuide(true)}
+          onClick={() => setShowInstallGuide(true)}
           className={`flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 font-bold text-amber-300 hover:bg-amber-500/20 active:scale-95 transition ${
             compact ? 'px-2.5 py-1 text-xs' : 'px-4 py-2 text-sm'
           }`}
@@ -40,7 +40,7 @@ export const PWAInstallButton: React.FC<{ compact?: boolean }> = ({ compact = fa
           <span>Install on iOS</span>
         </button>
 
-        {showIOSGuide && (
+        {showInstallGuide && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
             <div className="w-full max-w-sm rounded-2xl bg-[#14141d] border border-amber-500/30 p-6 shadow-2xl text-left">
               <div className="flex justify-between items-center mb-4">
@@ -48,10 +48,10 @@ export const PWAInstallButton: React.FC<{ compact?: boolean }> = ({ compact = fa
                   <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-black">
                     M2A
                   </div>
-                  <h3 className="text-base font-bold text-white">Install M2A on iPhone</h3>
+                  <h3 className="text-base font-bold text-white">{isIOS ? 'Install M2A on iPhone or iPad' : 'Install M2A on Android'}</h3>
                 </div>
                 <button
-                  onClick={() => setShowIOSGuide(false)}
+                  onClick={() => setShowInstallGuide(false)}
                   className="text-slate-400 hover:text-white p-1"
                 >
                   <X className="w-5 h-5" />
@@ -62,19 +62,19 @@ export const PWAInstallButton: React.FC<{ compact?: boolean }> = ({ compact = fa
                 <div className="flex items-start gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5">
                   <Share2 className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                   <p>
-                    1. Tap the <strong className="text-white">Share</strong> button in Safari toolbar at the bottom.
+                    1. {isIOS ? <>Tap the <strong className="text-white">Share</strong> button in Safari.</> : <>Open the browser menu <strong className="text-white">⋮</strong> in Chrome.</>}
                   </p>
                 </div>
                 <div className="flex items-start gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5">
                   <PlusSquare className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                   <p>
-                    2. Scroll down and tap <strong className="text-white">Add to Home Screen</strong>.
+                    2. {isIOS ? <>Scroll down and tap <strong className="text-white">Add to Home Screen</strong>, then tap <strong className="text-white">Add</strong>.</> : <>Tap <strong className="text-white">Install app</strong> or <strong className="text-white">Add to Home screen</strong>, then confirm.</>}
                   </p>
                 </div>
               </div>
 
               <button
-                onClick={() => setShowIOSGuide(false)}
+                onClick={() => setShowInstallGuide(false)}
                 className="mt-5 w-full rounded-xl bg-amber-500 py-2.5 text-sm font-bold text-black hover:bg-amber-400 transition"
               >
                 Got It
@@ -90,18 +90,14 @@ export const PWAInstallButton: React.FC<{ compact?: boolean }> = ({ compact = fa
   return (
     <button
       onClick={() => {
-        if ('standalone' in navigator) {
-          showToast('Tap browser menu (⋮ or Share) and select "Add to Home screen"', 'info');
-        } else {
-          showToast('Add M2A to home screen via browser menu for app mode', 'info');
-        }
+        setShowInstallGuide(true);
       }}
       className={`flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 font-bold text-amber-300 hover:bg-amber-500/20 active:scale-95 transition ${
         compact ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-xs'
       }`}
     >
       <Download className="w-3.5 h-3.5" />
-      <span>Install PWA</span>
+      <span>Install App</span>
     </button>
   );
 };
