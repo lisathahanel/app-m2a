@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Bookmark, BookmarkCheck, ExternalLink, Film, Loader2, RefreshCw, Search, Tv } from 'lucide-react';
+import { AdSenseAd } from '../AdSenseAd';
 
 type CatalogueKind = 'movie' | 'series';
 type FeedEntry = {
@@ -33,9 +34,6 @@ const FEEDS = [
 ];
 const PAGE_SIZE = 50;
 const MAX_PAGES = 4;
-const ADS_CLIENT = 'ca-pub-2269884583846743';
-const ADS_SLOT = '2906167922';
-
 let jsonpSequence = 0;
 
 function cleanText(value: string): string {
@@ -109,36 +107,6 @@ const formatDate = (value: string) => {
   if (!value) return '';
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-};
-
-const AdUnit: React.FC = () => {
-  const adRef = React.useRef<HTMLModElement>(null);
-  useEffect(() => {
-    const existing = document.querySelector('script[data-m2a-adsense]');
-    if (!existing) {
-      const script = document.createElement('script');
-      script.async = true;
-      script.crossOrigin = 'anonymous';
-      script.dataset.m2aAdsense = 'true';
-      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADS_CLIENT}`;
-      document.head.appendChild(script);
-    }
-    const node = adRef.current;
-    if (!node || node.dataset.m2aPushed === 'true') return;
-    try {
-      const ads = ((window as unknown as { adsbygoogle?: unknown[] }).adsbygoogle ||= []);
-      ads.push({});
-      node.dataset.m2aPushed = 'true';
-    } catch (error) {
-      console.warn('M2A catalogue ad could not be initialized:', error);
-    }
-  }, []);
-  return (
-    <div className="my-5 min-h-[100px] rounded-xl border border-[#d8cba9] bg-[#f4efdf] px-2 py-3 text-center">
-      <span className="mb-1 block text-[9px] font-semibold uppercase tracking-[.2em] text-[#8a806a]">Advertisement</span>
-      <ins ref={adRef} className="adsbygoogle block" style={{ display: 'block', minHeight: 80 }} data-ad-client={ADS_CLIENT} data-ad-slot={ADS_SLOT} data-ad-format="auto" data-full-width-responsive="true" />
-    </div>
-  );
 };
 
 export const MoviesSeriesScreen: React.FC<{ initialKind?: 'all' | CatalogueKind }> = ({ initialKind = 'all' }) => {
@@ -270,7 +238,7 @@ export const MoviesSeriesScreen: React.FC<{ initialKind?: 'all' | CatalogueKind 
                     {formatDate(item.published) && <p className="mt-2 text-[9px] text-[#9a9383]">{formatDate(item.published)}</p>}
                   </div>
                 </article>
-                {(index + 1) % 12 === 0 && <div className="col-span-2 sm:col-span-3 lg:col-span-4 xl:col-span-5"><AdUnit /></div>}
+                {(index + 1) % 12 === 0 && <div className="col-span-2 sm:col-span-3 lg:col-span-4 xl:col-span-5"><AdSenseAd /></div>}
               </React.Fragment>
             ))}
           </div>

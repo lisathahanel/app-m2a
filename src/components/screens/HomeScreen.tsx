@@ -16,6 +16,7 @@ import {
 import { BlogPost, Channel, MovieItem, TabType } from '../../types';
 import { fetchBloggerPosts } from '../../services/blogger';
 import { AdMobBanner } from '../AdMobBanner';
+import { AdSenseAd } from '../AdSenseAd';
 import { PWAInstallButton } from '../PWAInstallButton';
 
 interface HomeScreenProps {
@@ -203,6 +204,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       </section>
 
+      {/* Responsive AdSense placement after the main navigation shortcuts */}
+      <AdSenseAd />
+
       {/* Live Channels Section */}
       <section>
         <div className="flex items-center justify-between mb-3">
@@ -374,6 +378,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <React.Fragment key={post.id}>
                 {/* Insert native ad after second post */}
                 {idx === 2 && <AdMobBanner format="native" />}
+                {/* Second AdSense placement after readers have started browsing articles */}
+                {idx === 5 && <AdSenseAd />}
 
                 <a
                   href={post.url}
