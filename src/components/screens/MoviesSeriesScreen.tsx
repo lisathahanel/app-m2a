@@ -141,10 +141,10 @@ const AdUnit: React.FC = () => {
   );
 };
 
-export const MoviesSeriesScreen: React.FC = () => {
+export const MoviesSeriesScreen: React.FC<{ initialKind?: 'all' | CatalogueKind }> = ({ initialKind = 'all' }) => {
   const [items, setItems] = useState<CatalogueItem[]>([]);
   const [query, setQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | CatalogueKind>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | CatalogueKind>(initialKind);
   const [saved, setSaved] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<string[]>([]);
@@ -208,12 +208,10 @@ export const MoviesSeriesScreen: React.FC = () => {
           <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[.24em] text-[#d9b96c]">
             <Film size={16} /> Marketing2Advertising Entertainment
           </div>
-          <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Movies &amp; Series</h1>
-          <p className="mt-2 max-w-2xl text-sm text-[#d4cbb7]">Explore films, TV series and the latest stories from all three Marketing2Advertising Blogger sites.</p>
+          <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{initialKind === 'movie' ? 'Firimu' : 'Movies &amp; Series'}</h1>
+          <p className="mt-2 max-w-2xl text-sm text-[#d4cbb7]">{initialKind === 'movie' ? 'Browse Luganda-translated movies from Naka Marketing2Advertising.' : 'Explore films, TV series and the latest stories from all three Marketing2Advertising Blogger sites.'}</p>
           <div className="mt-4 flex flex-wrap gap-2 text-[11px] text-[#e4d7b8]">
-            <span className="rounded-full border border-[#b99b5d]/50 px-3 py-1">Naka Firimu</span>
-            <span className="rounded-full border border-[#b99b5d]/50 px-3 py-1">M2A Series</span>
-            <span className="rounded-full border border-[#b99b5d]/50 px-3 py-1">Main M2A Blog</span>
+            {initialKind === 'movie' ? <span className="rounded-full border border-[#b99b5d]/50 px-3 py-1">Naka Movies · naka.marketing2advertising.com</span> : <><span className="rounded-full border border-[#b99b5d]/50 px-3 py-1">Naka Firimu</span><span className="rounded-full border border-[#b99b5d]/50 px-3 py-1">M2A Series</span><span className="rounded-full border border-[#b99b5d]/50 px-3 py-1">Main M2A Blog</span></>}
           </div>
         </div>
 

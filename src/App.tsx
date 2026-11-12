@@ -13,7 +13,6 @@ import { AdConsentModal } from './components/AdConsentModal';
 import { AdMobInterstitial } from './components/AdMobInterstitial';
 import { HomeScreen } from './components/screens/HomeScreen';
 import { TVScreen } from './components/screens/TVScreen';
-import { FirimuScreen } from './components/screens/FirimuScreen';
 import { MoviesSeriesScreen } from './components/screens/MoviesSeriesScreen';
 import { BlogsScreen } from './components/screens/BlogsScreen';
 import { AppsScreen } from './components/screens/AppsScreen';
@@ -184,13 +183,7 @@ export default function App() {
               />
             )}
 
-            {currentTab === 'firimu' && (
-              <FirimuScreen
-                initialMovie={selectedMovie}
-                onClearInitialMovie={() => setSelectedMovie(null)}
-                onTriggerAd={triggerInterstitialAd}
-              />
-            )}
+            {currentTab === 'firimu' && <MoviesSeriesScreen initialKind="movie" />}
 
             {currentTab === 'catalogue' && <MoviesSeriesScreen />}
 
