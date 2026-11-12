@@ -28,6 +28,8 @@ export const PageScreen: React.FC<PageScreenProps> = ({
   const [data, setData] = useState<StaticPageData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fullUrl = `https://www.marketing2advertising.com${path}`;
+
   const getIcon = () => {
     if (path.includes('privacy')) return <Shield className="w-5 h-5 text-amber-400" />;
     if (path.includes('terms')) return <FileText className="w-5 h-5 text-amber-400" />;
@@ -56,7 +58,6 @@ export const PageScreen: React.FC<PageScreenProps> = ({
   }, [path]);
 
   const handleShare = () => {
-    const fullUrl = `https://www.marketing2advertising.com${path}`;
     if (navigator.share) {
       navigator.share({ title: data?.title || defaultTitle, url: fullUrl }).catch(() => {});
     } else {
@@ -74,10 +75,20 @@ export const PageScreen: React.FC<PageScreenProps> = ({
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-200 hover:text-amber-400 transition"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>← Back</span>
+          <span>Back</span>
         </button>
 
         <div className="flex items-center gap-2">
+          <a
+            href={fullUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-bold transition"
+            title="Open on site"
+          >
+            <span>Open on Site</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
           <button
             onClick={loadPage}
             className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-amber-400 transition"
@@ -109,45 +120,40 @@ export const PageScreen: React.FC<PageScreenProps> = ({
           </div>
         </div>
 
-        {/* AdMob Banner Slot */}
-        <AdMobBanner format="banner" />
-
         {loading ? (
-          <div className="space-y-3 py-8 animate-pulse">
-            <div className="w-full h-4 bg-white/10 rounded" />
-            <div className="w-4/5 h-3 bg-white/5 rounded" />
-            <div className="w-2/3 h-3 bg-white/5 rounded" />
-            <div className="w-3/4 h-3 bg-white/5 rounded" />
+          <div className="space-y-3 py-6 animate-pulse">
+            <div className="h-4 bg-white/10 rounded w-3/4" />
+            <div className="h-3 bg-white/5 rounded w-full" />
+            <div className="h-3 bg-white/5 rounded w-5/6" />
+            <div className="h-3 bg-white/5 rounded w-4/6" />
           </div>
-        ) : data?.contentHtml ? (
-          <div
-            className="article-content text-xs sm:text-sm text-slate-200 leading-relaxed space-y-3 font-normal [&_h1]:text-base [&_h1]:font-black [&_h1]:text-white [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-white [&_h3]:text-xs [&_h3]:font-bold [&_h3]:text-amber-400 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_a]:text-amber-400 [&_a]:underline"
-            dangerouslySetInnerHTML={{ __html: data.contentHtml }}
-          />
         ) : (
-          <div className="text-center py-8 text-slate-400 text-xs">
-            <p>Could not load content for this page.</p>
-            <button
-              onClick={loadPage}
-              className="mt-3 px-4 py-2 rounded-xl bg-amber-500 text-black font-bold"
-            >
-              Retry
-            </button>
-          </div>
+          <div
+            className="text-xs sm:text-sm text-slate-200 leading-relaxed space-y-3 pt-2 [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-white [&_h2]:mt-4 [&_p]:mb-2 [&_a]:text-amber-400 [&_a]:underline"
+            dangerouslySetInnerHTML={{
+              __html:
+                data?.contentHtml ||
+                (data as unknown as { content?: string })?.content ||
+                `<p class="text-slate-400">Loading information from marketing2advertising.com…</p>`,
+            }}
+          />
         )}
 
-        <div className="pt-4 border-t border-white/10 text-center">
+        {/* Bottom Direct Link */}
+        <div className="pt-4 border-t border-white/10 flex justify-between items-center text-xs">
           <a
-            href={`https://www.marketing2advertising.com${path}`}
+            href={fullUrl}
             target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 font-bold"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-amber-400 hover:underline font-bold"
           >
-            <span>Open Original Page on marketing2advertising.com</span>
+            <span>View official page on marketing2advertising.com</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
       </div>
+
+      <AdMobBanner format="banner" />
     </div>
   );
 };

@@ -223,16 +223,18 @@ export const Drawer: React.FC<DrawerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="pt-4 border-t border-white/10 text-center">
-          <a
-            href="https://www.marketing2advertising.com"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-amber-400 transition"
-          >
-            Visit marketing2advertising.com <ExternalLink className="w-3 h-3" />
-          </a>
-          <p className="text-[9px] text-slate-600 mt-1">Version 2.0 · Mobile PWA & Flutter</p>
+        <div className="pt-4 border-t border-white/10 text-center space-y-1">
+          <div>
+            <a
+              href="https://www.marketing2advertising.com"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-300 hover:text-amber-400 transition"
+            >
+              marketing2advertising.com <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+          <p className="text-[9px] text-slate-600 mt-1">Version 2.0 · Mobile PWA & App</p>
         </div>
       </div>
     </div>

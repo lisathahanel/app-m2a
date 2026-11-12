@@ -16,13 +16,13 @@ import {
 import { BlogPost, Channel, MovieItem, TabType } from '../../types';
 import { fetchBloggerPosts } from '../../services/blogger';
 import { AdMobBanner } from '../AdMobBanner';
-import { AdSenseAd } from '../AdSenseAd';
 import { PWAInstallButton } from '../PWAInstallButton';
 
 interface HomeScreenProps {
   onSelectTab: (tab: TabType) => void;
   onSelectChannel: (channel: Channel) => void;
   onSelectPost: (post: BlogPost) => void;
+  onSelectMovie?: (movie: MovieItem) => void;
   channels: Channel[];
 }
 
@@ -30,6 +30,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onSelectTab,
   onSelectChannel,
   onSelectPost,
+  onSelectMovie,
   channels,
 }) => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -202,9 +203,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       </section>
 
-      {/* Google AdSense Slot */}
-      <AdSenseAd slot="2906167922" />
-
       {/* Live Channels Section */}
       <section>
         <div className="flex items-center justify-between mb-3">
@@ -287,7 +285,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             {nakaMovies.map((movie) => (
               <div
                 key={movie.id}
-                onClick={() => onSelectTab('firimu')}
+                onClick={() => {
+                  if (onSelectMovie) {
+                    onSelectMovie(movie);
+                  } else {
+                    onSelectTab('firimu');
+                  }
+                }}
                 className="group relative overflow-hidden rounded-2xl bg-[#14141e] border border-white/5 hover:border-amber-500/40 p-2 cursor-pointer transition flex flex-col justify-between"
               >
                 <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-black mb-1.5">
@@ -371,9 +375,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 {/* Insert native ad after second post */}
                 {idx === 2 && <AdMobBanner format="native" />}
 
-                <div
-                  onClick={() => onSelectPost(post)}
-                  className="group flex gap-3.5 p-3 rounded-2xl bg-[#14141e] border border-white/5 hover:border-amber-500/30 cursor-pointer transition active:scale-[0.99]"
+                <a
+                  href={post.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex gap-3.5 p-3 rounded-2xl bg-[#14141e] border border-white/5 hover:border-amber-500/30 cursor-pointer transition active:scale-[0.99] block text-left"
                 >
                   <div className="relative w-24 h-24 sm:w-28 sm:h-24 rounded-xl overflow-hidden bg-black shrink-0 border border-white/5">
                     <img
@@ -413,13 +419,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                           day: 'numeric',
                         })}
                       </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-slate-500" />
-                        3 min read
+                      <span className="text-amber-400 font-bold flex items-center gap-1 text-[11px] group-hover:underline ml-auto">
+                        <span>Open on Site</span>
+                        <ExternalLink className="w-3 h-3" />
                       </span>
                     </div>
                   </div>
-                </div>
+                </a>
               </React.Fragment>
             ))}
           </div>

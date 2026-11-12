@@ -20,7 +20,8 @@ import { GamesScreen } from './components/screens/GamesScreen';
 import { JobsScreen } from './components/screens/JobsScreen';
 import { PageScreen } from './components/screens/PageScreen';
 import { FlutterGuideModal } from './components/screens/FlutterGuideModal';
-import { AppTool, BlogPost, Channel, GameItem, TabType } from './types';
+import { ToastContainer } from './components/Toast';
+import { AppTool, BlogPost, Channel, GameItem, MovieItem, TabType } from './types';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -32,6 +33,7 @@ export default function App() {
   // Navigation states
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const [selectedMovie, setSelectedMovie] = useState<MovieItem | null>(null);
   const [staticPage, setStaticPage] = useState<{ path: string; title: string } | null>(null);
 
   // Dialog & drawer states
@@ -64,6 +66,7 @@ export default function App() {
     setCurrentTab(tab);
     setStaticPage(null);
     setSelectedPost(null);
+    setSelectedMovie(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -76,13 +79,17 @@ export default function App() {
       setSelectedPost(null);
       return;
     }
+    if (selectedMovie) {
+      setSelectedMovie(null);
+      return;
+    }
     if (currentTab !== 'home') {
       setCurrentTab('home');
       return;
     }
   };
 
-  const canGoBack = Boolean(staticPage || selectedPost || currentTab !== 'home');
+  const canGoBack = Boolean(staticPage || selectedPost || selectedMovie || currentTab !== 'home');
 
   const handleOpenPage = (path: string, title: string) => {
     setStaticPage({ path, title });
@@ -95,6 +102,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0b0b0f] text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-black">
+      {/* Toast Notification Container */}
+      <ToastContainer />
+
       {/* Splash Screen */}
       {showSplash && <Splash onFinish={() => setShowSplash(false)} />}
 
@@ -157,6 +167,10 @@ export default function App() {
                   setSelectedPost(p);
                   setCurrentTab('blogs');
                 }}
+                onSelectMovie={(m) => {
+                  setSelectedMovie(m);
+                  setCurrentTab('firimu');
+                }}
                 channels={channels}
               />
             )}
@@ -170,7 +184,11 @@ export default function App() {
             )}
 
             {currentTab === 'firimu' && (
-              <FirimuScreen onTriggerAd={triggerInterstitialAd} />
+              <FirimuScreen
+                initialMovie={selectedMovie}
+                onClearInitialMovie={() => setSelectedMovie(null)}
+                onTriggerAd={triggerInterstitialAd}
+              />
             )}
 
             {currentTab === 'blogs' && (

@@ -18,20 +18,33 @@ import {
   ExternalLink,
   Clapperboard,
   Tv,
+  Globe,
 } from 'lucide-react';
 import { MovieItem } from '../../types';
 import { AdMobBanner } from '../AdMobBanner';
-import { AdSenseAd } from '../AdSenseAd';
 import { showToast } from '../Toast';
 
 interface FirimuScreenProps {
+  initialMovie?: MovieItem | null;
+  onClearInitialMovie?: () => void;
   onTriggerAd?: () => void;
 }
 
-export const FirimuScreen: React.FC<FirimuScreenProps> = ({ onTriggerAd }) => {
+export const FirimuScreen: React.FC<FirimuScreenProps> = ({
+  initialMovie,
+  onClearInitialMovie,
+  onTriggerAd,
+}) => {
   const [movies, setMovies] = useState<MovieItem[]>([]);
-  const [selectedMovie, setSelectedMovie] = useState<MovieItem | null>(null);
+  const [selectedMovie, setSelectedMovie] = useState<MovieItem | null>(initialMovie || null);
   const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (initialMovie) {
+      setSelectedMovie(initialMovie);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [initialMovie]);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [activeVj, setActiveVj] = useState<string>('All');
   const [activeGenre, setActiveGenre] = useState<string>('All');
@@ -446,6 +459,18 @@ export const FirimuScreen: React.FC<FirimuScreenProps> = ({ onTriggerAd }) => {
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0">
+                {selectedMovie.url && (
+                  <a
+                    href={selectedMovie.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-[11px] font-bold transition active:scale-95"
+                    title="Open on naka.marketing2advertising.com"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Open on Site</span>
+                  </a>
+                )}
                 <button
                   onClick={() => handleShareMovie(selectedMovie)}
                   className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-amber-400 transition"
@@ -489,9 +514,6 @@ export const FirimuScreen: React.FC<FirimuScreenProps> = ({ onTriggerAd }) => {
           </div>
         </div>
       )}
-
-      {/* Google AdSense Slot */}
-      <AdSenseAd slot="2906167922" />
 
       {/* VJ Filter Chips */}
       <div>
@@ -609,6 +631,21 @@ export const FirimuScreen: React.FC<FirimuScreenProps> = ({ onTriggerAd }) => {
                     <span className="absolute top-1.5 left-1.5 px-1.5 py-0.2 rounded bg-amber-500 text-black text-[8px] font-black uppercase">
                       {movie.vj}
                     </span>
+
+                    {/* Open on site link */}
+                    {movie.url && (
+                      <a
+                        href={movie.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-lg bg-black/80 hover:bg-amber-500 hover:text-black text-amber-300 text-[9px] font-bold border border-white/20 flex items-center gap-1 transition"
+                        title="Open post on naka.marketing2advertising.com"
+                      >
+                        <ExternalLink className="w-2.5 h-2.5" />
+                        <span>Site</span>
+                      </a>
+                    )}
 
                     {/* Play icon overlay */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40">

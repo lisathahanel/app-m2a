@@ -11,7 +11,66 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const isProd = process.env.NODE_ENV === 'production';
 
+// Enable Express trust proxy so req.hostname, req.ip, and req.protocol reflect
+// reverse proxies like Cloudflare Worker and Cloud Run
+app.set('trust proxy', 1);
+
 app.use(express.json());
+
+// List of recognized / allowed hostnames for M2A
+const ALLOWED_HOSTS = new Set([
+  'm2a.marketing2advertising.com',
+  'marketing2advertising.ai.studio',
+  'marketing2advertising.com',
+  'www.marketing2advertising.com',
+  'naka.marketing2advertising.com',
+]);
+
+// CORS & Reverse Proxy Awareness Middleware
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  // Check if incoming origin is in our allowed domains or matches Cloud Run / AI Studio subdomains
+  let isAllowedOrigin = false;
+  if (origin) {
+    try {
+      const originUrl = new URL(origin);
+      const originHost = originUrl.hostname.toLowerCase();
+      if (
+        ALLOWED_HOSTS.has(originHost) ||
+        originHost.endsWith('.marketing2advertising.com') ||
+        originHost.endsWith('.ai.studio') ||
+        originHost.endsWith('.run.app') ||
+        originHost === 'localhost' ||
+        originHost === '127.0.0.1'
+      ) {
+        isAllowedOrigin = true;
+      }
+    } catch {
+      isAllowedOrigin = false;
+    }
+  }
+
+  if (isAllowedOrigin && origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else if (!origin) {
+    // Same-origin request
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+
+  // Inform clients and proxies of the resolved public primary domain
+  res.setHeader('X-Custom-Domain', 'https://m2a.marketing2advertising.com');
+  res.setHeader('Vary', 'Origin, X-Forwarded-Host');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 // Helper function to fetch remote data with redirect handling
 function fetchUrl(targetUrl: string): Promise<string> {
@@ -238,6 +297,75 @@ app.get('/api/naka/movies', async (req, res) => {
   }
 });
 
+// Real URL Embed Proxy API (allows in-app embedding without X-Frame-Options or frame-busting blocks)
+app.get('/api/embed', async (req, res) => {
+  try {
+    const rawUrl = req.query.url as string;
+    if (!rawUrl) {
+      return res.status(400).send('Missing url parameter');
+    }
+
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(rawUrl);
+    } catch {
+      return res.status(400).send('Invalid url parameter');
+    }
+
+    const allowedHosts = [
+      'marketing2advertising.com',
+      'www.marketing2advertising.com',
+      'naka.marketing2advertising.com',
+      'm2a.marketing2advertising.com',
+      'blogger.com',
+      'blogspot.com',
+      'nmj-movies.unseen.africa',
+    ];
+
+    const hostMatches = allowedHosts.some((h) => parsedUrl.hostname === h || parsedUrl.hostname.endsWith(`.${h}`));
+    if (!hostMatches) {
+      return res.status(403).send('Domain not allowed for embedding');
+    }
+
+    const cacheKey = `embed:${rawUrl}`;
+    const cached = cache.get(cacheKey);
+    let html = '';
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      html = cached.data as string;
+    } else {
+      html = await fetchUrl(rawUrl);
+      cache.set(cacheKey, { timestamp: Date.now(), data: html });
+    }
+
+    // Inject <base href="..."> into <head> so images, relative scripts, and css resolve correctly
+    const baseTag = `<base href="${rawUrl}">`;
+    if (html.includes('<head>')) {
+      html = html.replace('<head>', `<head>${baseTag}`);
+    } else if (html.includes('<HEAD>')) {
+      html = html.replace('<HEAD>', `<HEAD>${baseTag}`);
+    } else {
+      html = `${baseTag}${html}`;
+    }
+
+    // Neutralize frame-busting scripts (e.g. top.location = self.location, window.top.location = window.self.location)
+    html = html.replace(/top\.location\s*=\s*(self|window)\.location/gi, '/* frame-busting neutralized */');
+    html = html.replace(/window\.top\s*!==\s*window\.self/gi, 'false');
+    html = html.replace(/top\s*!==\s*self/gi, 'false');
+
+    // Remove any restrictive headers from the response
+    res.removeHeader('X-Frame-Options');
+    res.removeHeader('Content-Security-Policy');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    res.send(html);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('Embed error:', message);
+    res.status(500).send(`Failed to load embedded page: ${message}`);
+  }
+});
+
 // Blogger Static Page Extractor API
 app.get('/api/blogger/page', async (req, res) => {
   try {
@@ -323,6 +451,36 @@ app.get('/api/games', async (_req, res) => {
   } catch {
     res.status(500).json({ error: 'Failed to load games' });
   }
+});
+
+// Health check endpoint for Cloud Run and Cloudflare Worker
+app.get('/api/health', (_req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV || 'development',
+  });
+});
+
+// App configuration and custom domain endpoint (proxy and host-aware)
+app.get('/api/config', (req, res) => {
+  const forwardedHost = req.headers['x-forwarded-host'];
+  const host = typeof forwardedHost === 'string' ? forwardedHost.split(',')[0].trim() : req.get('host') || 'm2a.marketing2advertising.com';
+  const proto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+
+  res.json({
+    name: 'M2A',
+    primaryPublicUrl: 'https://m2a.marketing2advertising.com/',
+    currentOrigin: `${proto}://${host}`,
+    customDomain: 'https://m2a.marketing2advertising.com',
+    aiStudioDomain: 'https://marketing2advertising.ai.studio',
+    mainDomain: 'https://www.marketing2advertising.com',
+    nakaDomain: 'https://naka.marketing2advertising.com',
+    canonicalUrl: 'https://m2a.marketing2advertising.com/',
+    detectedHost: host,
+    detectedProtocol: proto,
+    status: 'configured',
+  });
 });
 
 // Setup Vite or static serving

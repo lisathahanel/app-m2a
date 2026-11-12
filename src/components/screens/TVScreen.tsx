@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { Channel } from '../../types';
 import { AdMobBanner } from '../AdMobBanner';
-import { AdSenseAd } from '../AdSenseAd';
 
 interface TVScreenProps {
   channels: Channel[];
@@ -351,9 +350,6 @@ export const TVScreen: React.FC<TVScreenProps> = ({
           })}
         </div>
       </div>
-
-      {/* Google AdSense Slot */}
-      <AdSenseAd slot="2906167922" />
 
       {/* Channels Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">

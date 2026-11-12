@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { GameItem } from '../../types';
 import { AdMobBanner } from '../AdMobBanner';
+import { showToast } from '../Toast';
 
 interface GamesScreenProps {
   games: GameItem[];
@@ -710,7 +711,7 @@ const SimonSaysGame: React.FC = () => {
         setPlayerStep((s) => s + 1);
       }
     } else {
-      alert('Wrong sequence! Score: ' + score);
+      showToast('Wrong sequence! Score: ' + score, 'warning');
       setSeq([Math.floor(Math.random() * 4)]);
       setPlayerStep(0);
       setScore(0);
@@ -848,7 +849,7 @@ const ReactionGame: React.FC = () => {
 
   const handleClick = () => {
     if (state === 'waiting') {
-      alert('Too early! Wait for green.');
+      showToast('Too early! Wait for green.', 'warning');
       setState('idle');
     } else if (state === 'ready') {
       const elapsed = Date.now() - startTime;
@@ -1060,8 +1061,8 @@ const BlackjackGame: React.FC = () => {
           Hit
         </button>
         <button
-          onClick={() => alert(`Game result: You scored ${playerScore}`)}
-          className="px-5 py-2 rounded-xl bg-white/10 font-bold text-white"
+          onClick={() => showToast(`Game result: You scored ${playerScore}!`, 'info')}
+          className="px-5 py-2 rounded-xl bg-white/10 font-bold text-white hover:bg-white/20 transition active:scale-95"
         >
           Stand
         </button>
@@ -1090,18 +1091,23 @@ const SpaceShooterGame: React.FC = () => {
 
 /* 14. Connect Four Game */
 const ConnectFourGame: React.FC = () => {
-  const [cols, setCols] = useState<number[]>(Array(7).fill(0));
+  const [chipCount, setChipCount] = useState(0);
   return (
     <div className="flex flex-col items-center space-y-3 text-xs">
-      <div className="text-slate-300 font-bold">Connect Four</div>
+      <div className="text-slate-300 font-bold">Connect Four · Chips dropped: {chipCount}</div>
       <div className="grid grid-cols-7 gap-1 p-2 bg-blue-950 rounded-2xl border border-blue-800">
         {Array.from({ length: 42 }).map((_, i) => (
-          <div key={i} className="w-8 h-8 rounded-full bg-black/60 border border-white/10 flex items-center justify-center" />
+          <div key={i} className={`w-8 h-8 rounded-full border border-white/10 flex items-center justify-center transition-all ${
+            i >= 42 - chipCount ? (i % 2 === 0 ? 'bg-amber-400 shadow-sm' : 'bg-rose-500 shadow-sm') : 'bg-black/60'
+          }`} />
         ))}
       </div>
       <button
-        onClick={() => alert('Connect Four round ready!')}
-        className="px-4 py-1.5 rounded-xl bg-amber-500 text-black font-bold"
+        onClick={() => {
+          setChipCount((c) => Math.min(42, c + 1));
+          showToast('Chip dropped into slot!', 'success');
+        }}
+        className="px-4 py-1.5 rounded-xl bg-amber-500 text-black font-bold active:scale-95 transition"
       >
         Drop Chip
       </button>

@@ -59,6 +59,18 @@ export const JobsScreen: React.FC = () => {
 
   return (
     <div className="pb-28 max-w-xl mx-auto px-3.5 space-y-4 animate-in fade-in duration-300">
+      {/* Top Direct Site Link */}
+      <div className="flex justify-end">
+        <a
+          href="https://www.marketing2advertising.com/p/job-matching-across-ireland-singapore_2.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-300 border border-blue-500/30 text-xs font-bold transition active:scale-95"
+        >
+          <span>Open on marketing2advertising.com</span>
+          <ExternalLink className="w-3.5 h-3.5" />
+        </a>
+      </div>
       {/* Header Banner */}
       <div className="rounded-3xl bg-gradient-to-b from-[#1c1c2b] to-[#12121a] border border-blue-500/30 p-5 shadow-2xl relative overflow-hidden">
         <div className="flex items-center gap-2 mb-2">

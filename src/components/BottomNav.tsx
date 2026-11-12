@@ -17,20 +17,24 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   canGoBack,
 }) => {
   const handleShare = async () => {
+    const isCustom = typeof window !== 'undefined' && window.location.hostname.includes('m2a.marketing2advertising.com');
+    const shareUrl = isCustom
+      ? 'https://m2a.marketing2advertising.com/'
+      : (typeof window !== 'undefined' ? `${window.location.origin}/` : 'https://m2a.marketing2advertising.com/');
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'M2A - Marketing & Advertising',
           text: 'Watch Live TV channels, Firimu movies on naka, play 15 games, and explore multi-apps on M2A!',
-          url: window.location.href,
+          url: shareUrl,
         });
       } catch {
         // User cancelled or share failed
       }
     } else {
       try {
-        await navigator.clipboard.writeText(window.location.href);
-        showToast('Link copied to clipboard!', 'success');
+        await navigator.clipboard.writeText(shareUrl);
+        showToast(`M2A link copied: ${shareUrl}`, 'success');
       } catch {
         showToast('Link ready to share', 'info');
       }
