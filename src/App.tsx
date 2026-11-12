@@ -20,6 +20,7 @@ import { GamesScreen } from './components/screens/GamesScreen';
 import { JobsScreen } from './components/screens/JobsScreen';
 import { PageScreen } from './components/screens/PageScreen';
 import { ToastContainer } from './components/Toast';
+import { AdBlockGuard } from './components/AdBlockGuard';
 import { AppTool, BlogPost, Channel, GameItem, MovieItem, TabType } from './types';
 
 export default function App() {
@@ -102,6 +103,7 @@ export default function App() {
     <div className="min-h-screen bg-[#0b0b0f] text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-black">
       {/* Toast Notification Container */}
       <ToastContainer />
+      <AdBlockGuard />
 
       {/* Splash Screen */}
       {showSplash && <Splash onFinish={() => setShowSplash(false)} />}
