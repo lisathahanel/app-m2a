@@ -12,7 +12,6 @@ import {
   Shield,
   FileText,
   AlertCircle,
-  Smartphone,
   ExternalLink,
 } from 'lucide-react';
 import { TabType } from '../types';
@@ -22,7 +21,6 @@ interface DrawerProps {
   onClose: () => void;
   onSelectTab: (tab: TabType) => void;
   onOpenPage: (path: string, title: string) => void;
-  onOpenFlutterGuide: () => void;
 }
 
 export const Drawer: React.FC<DrawerProps> = ({
@@ -30,7 +28,6 @@ export const Drawer: React.FC<DrawerProps> = ({
   onClose,
   onSelectTab,
   onOpenPage,
-  onOpenFlutterGuide,
 }) => {
   if (!isOpen) return null;
 
@@ -214,22 +211,6 @@ export const Drawer: React.FC<DrawerProps> = ({
             </button>
           </div>
 
-          {/* Flutter Export & Mobile Build Hub */}
-          <div className="pt-2">
-            <button
-              onClick={() => {
-                onOpenFlutterGuide();
-                onClose();
-              }}
-              className="w-full flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-amber-500/15 to-yellow-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 transition text-left"
-            >
-              <Smartphone className="w-5 h-5 text-amber-400 shrink-0" />
-              <div>
-                <div className="text-xs font-bold text-white">Flutter & APK Hub</div>
-                <div className="text-[10px] text-amber-400/80">Code, Pubspec & Build Steps</div>
-              </div>
-            </button>
-          </div>
         </div>
 
         {/* Footer */}
