@@ -15,6 +15,7 @@ export const AdSenseAd: React.FC<{ className?: string }> = ({ className = '' }) 
       script.dataset.m2aAdsense = 'true';
       script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADS_CLIENT}`;
       script.onerror = () => {
+        script.dataset.m2aAdsenseFailed = 'true';
         if (navigator.onLine) window.dispatchEvent(new CustomEvent('m2a:adblock-detected'));
       };
       document.head.appendChild(script);
