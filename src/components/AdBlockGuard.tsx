@@ -9,7 +9,10 @@ export const AdBlockGuard: React.FC = () => {
     // The off-screen bait does not load or request an advert.
     const timer = window.setTimeout(() => {
       const probe = document.getElementById('x_probe_42');
-      if (navigator.onLine && probe && (probe.offsetWidth === 0 || probe.offsetHeight === 0)) setBlocked(true);
+      const adsScript = document.querySelector('script[data-m2a-adsense]') as HTMLScriptElement | null;
+      const baitHidden = !!probe && (probe.offsetWidth === 0 || probe.offsetHeight === 0);
+      const adsScriptBlocked = adsScript?.dataset.m2aAdsenseFailed === 'true';
+      if (navigator.onLine && (baitHidden || adsScriptBlocked)) setBlocked(true);
     }, 1400);
     return () => {
       window.clearTimeout(timer);
