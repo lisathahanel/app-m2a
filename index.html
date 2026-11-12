@@ -57,6 +57,7 @@
     <script>
       (function () {
         function showBootError(message) {
+          if (window.__M2A_APP_STARTED__) return;
           var root = document.getElementById('root');
           var box = document.getElementById('m2a-boot-error');
           var detail = document.getElementById('m2a-boot-error-detail');
@@ -65,11 +66,20 @@
           if (box) box.style.display = 'block';
         }
         window.addEventListener('error', function (event) {
-          if (event && (event.target instanceof HTMLScriptElement || event.message)) {
+          if (!event || window.__M2A_APP_STARTED__) return;
+          // Only a failed app module should stop startup. Third-party scripts
+          // (for example AdSense inside the catalogue) may be blocked without
+          // preventing M2A itself from running.
+          var target = event.target;
+          var isAppModule = target instanceof HTMLScriptElement &&
+            target.type === 'module' &&
+            (target.src.indexOf('/assets/') !== -1 || target.src.indexOf('/src/main.tsx') !== -1);
+          if (isAppModule || event.message) {
             showBootError(event.message || 'A required app script could not be loaded.');
           }
         }, true);
         window.addEventListener('unhandledrejection', function (event) {
+          if (window.__M2A_APP_STARTED__) return;
           showBootError(event.reason && (event.reason.message || event.reason) || 'The app encountered an unexpected startup error.');
         });
       })();
