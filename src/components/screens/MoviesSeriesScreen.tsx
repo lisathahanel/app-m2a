@@ -53,7 +53,13 @@ function extractImage(entry: FeedEntry): string {
 }
 
 function entryUrl(entry: FeedEntry): string {
-  return entry.link?.find((link) => link.rel === 'alternate' && link.type === 'text/html')?.href || '';
+  // Blogger feeds normally mark post links as rel="alternate" and
+  // type="text/html", but custom-domain feeds can omit the type attribute.
+  // Accept the alternate href even when Blogger leaves that optional field out.
+  const links = entry.link || [];
+  return links.find((link) => link.rel === 'alternate' && Boolean(link.href))?.href
+    || links.find((link) => link.type === 'text/html' && Boolean(link.href))?.href
+    || '';
 }
 
 function loadJsonp(url: string, startIndex: number): Promise<FeedPayload> {
