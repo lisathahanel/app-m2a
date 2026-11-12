@@ -28,7 +28,8 @@ type FeedPayload = { feed?: { entry?: FeedEntry[]; 'openSearch$totalResults'?: {
 
 const FEEDS = [
   { key: 'naka', url: 'https://naka.marketing2advertising.com', kind: 'movie' as const, label: 'Naka Firimu' },
-  { key: 'main', url: 'https://www.marketing2advertising.com', kind: 'series' as const, label: 'M2A Series & Updates' },
+  { key: 'serie', url: 'https://serie.marketing2advertising.com', kind: 'series' as const, label: 'M2A Series' },
+  { key: 'main', url: 'https://www.marketing2advertising.com', kind: 'series' as const, label: 'M2A Blog' },
 ];
 const PAGE_SIZE = 50;
 const MAX_PAGES = 4;
@@ -202,9 +203,10 @@ export const MoviesSeriesScreen: React.FC = () => {
             <Film size={16} /> Marketing2Advertising Entertainment
           </div>
           <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Movies &amp; Series</h1>
-          <p className="mt-2 max-w-2xl text-sm text-[#d4cbb7]">Explore films from Naka and series, stories and updates from the main M2A blog.</p>
+          <p className="mt-2 max-w-2xl text-sm text-[#d4cbb7]">Explore films, TV series and the latest stories from all three Marketing2Advertising Blogger sites.</p>
           <div className="mt-4 flex flex-wrap gap-2 text-[11px] text-[#e4d7b8]">
             <span className="rounded-full border border-[#b99b5d]/50 px-3 py-1">Naka Firimu</span>
+            <span className="rounded-full border border-[#b99b5d]/50 px-3 py-1">M2A Series</span>
             <span className="rounded-full border border-[#b99b5d]/50 px-3 py-1">Main M2A Blog</span>
           </div>
         </div>

@@ -1,9 +1,7 @@
 name: Deploy M2A AI to Cloud Run
 
 on:
-  push:
-    branches:
-      - main
+  # Manual only until Google Cloud Workload Identity credentials are configured.
   workflow_dispatch:
 
 permissions:
