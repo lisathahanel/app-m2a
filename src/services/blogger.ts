@@ -22,6 +22,21 @@ interface BloggerFeedResponse {
 }
 
 const CACHE_KEY_PREFIX = 'm2a_feed_';
+export function normalizeBloggerPostUrl(rawUrl: string, site: 'main' | 'naka' = 'main'): string {
+  if (!rawUrl) return rawUrl;
+  try {
+    const url = new URL(rawUrl);
+    if (site === 'main' && url.hostname === 'www.marketing2advertising.com') {
+      url.hostname = 'marketing2advertising.com';
+    } else if (site === 'naka' && url.hostname === 'naka.marketing2advertising.com') {
+      if (!url.pathname.startsWith('/firimu/')) url.pathname = `/firimu${url.pathname.startsWith('/') ? '' : '/'}${url.pathname}`;
+      url.hostname = 'marketing2advertising.com';
+    }
+    return url.toString();
+  } catch {
+    return rawUrl;
+  }
+}
 const FEED_HOSTS = {
   main: 'https://www.marketing2advertising.com',
   naka: 'https://naka.marketing2advertising.com',
@@ -172,7 +187,7 @@ export async function fetchBloggerPosts(options: {
           avatar: entry.author?.[0]?.gd$image?.src,
         },
         categories,
-        url: altLink,
+        url: normalizeBloggerPostUrl(altLink, site),
       };
     }).filter((post) => Boolean(post.url));
 
@@ -189,7 +204,7 @@ export async function fetchBloggerPosts(options: {
       const cached = localStorage.getItem(cacheKey);
       if (cached) {
         const parsed = JSON.parse(cached);
-        return { posts: parsed.posts || [], totalResults: parsed.totalResults || 0 };
+        return { posts: (parsed.posts || []).map((post: BlogPost) => ({ ...post, url: normalizeBloggerPostUrl(post.url, site) })), totalResults: parsed.totalResults || 0 };
       }
     } catch {
       // Ignore unavailable or malformed offline cache.

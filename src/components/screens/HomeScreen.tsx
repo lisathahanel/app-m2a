@@ -383,8 +383,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
                 <a
                   href={post.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="group flex gap-3.5 p-3 rounded-2xl bg-[#14141e] border border-white/5 hover:border-amber-500/30 cursor-pointer transition active:scale-[0.99] block text-left"
                 >
                   <div className="relative w-24 h-24 sm:w-28 sm:h-24 rounded-xl overflow-hidden bg-black shrink-0 border border-white/5">
@@ -458,8 +456,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
         <a
           href="https://www.marketing2advertising.com"
-          target="_blank"
-          rel="noreferrer"
           className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 font-semibold transition"
         >
           <span>Open Site</span>
