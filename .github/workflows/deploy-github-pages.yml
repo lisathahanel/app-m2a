@@ -30,9 +30,9 @@ jobs:
         run: bun run build
       - name: Verify compiled entry paths
         run: |
-          grep -q 'src="/app-m2a/assets/' dist/index.html
-          grep -q 'href="/app-m2a/assets/' dist/index.html
-          echo 'Verified: GitHub Pages index points to the built JavaScript and CSS bundles.'
+          grep -q 'src="./assets/' dist/index.html
+          grep -q 'href="./assets/' dist/index.html
+          echo 'Verified: The app index points to relative JavaScript and CSS bundles for both project Pages and custom-domain hosting.'
       - name: Add Pages marker
         run: touch dist/.nojekyll
       - name: Upload Pages artifact
