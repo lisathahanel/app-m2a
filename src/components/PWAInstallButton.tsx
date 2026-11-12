@@ -37,7 +37,7 @@ export const PWAInstallButton: React.FC<{ compact?: boolean }> = ({ compact = fa
           }`}
         >
           <Download className={compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
-          <span>Install on iOS</span>
+          <span>{isIOS ? 'Install on iOS' : 'Install App'}</span>
         </button>
 
         {showInstallGuide && (
@@ -89,9 +89,7 @@ export const PWAInstallButton: React.FC<{ compact?: boolean }> = ({ compact = fa
   // Fallback direct install / web prompt
   return (
     <button
-      onClick={() => {
-        setShowInstallGuide(true);
-      }}
+      onClick={() => showToast('Open your browser menu and choose Install app or Add to Home screen.', 'info')}
       className={`flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 font-bold text-amber-300 hover:bg-amber-500/20 active:scale-95 transition ${
         compact ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-xs'
       }`}
