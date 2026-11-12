@@ -5,6 +5,8 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    // GitHub Pages project-site path; normal root hosting keeps '/'.
+    base: process.env.GITHUB_PAGES === 'true' ? '/app-m2a/' : '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
