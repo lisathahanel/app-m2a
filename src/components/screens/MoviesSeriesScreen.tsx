@@ -50,6 +50,21 @@ function extractImage(entry: FeedEntry): string {
   return '';
 }
 
+function normalizeCataloguePostUrl(rawUrl: string, source: string): string {
+  if (!rawUrl) return rawUrl;
+  try {
+    const url = new URL(rawUrl);
+    if (source === 'main' && url.hostname === 'www.marketing2advertising.com') {
+      url.hostname = 'marketing2advertising.com';
+    } else if ((source === 'naka' || source === 'serie') && (url.hostname === 'naka.marketing2advertising.com' || url.hostname === 'serie.marketing2advertising.com')) {
+      if (!url.pathname.startsWith('/firimu/')) url.pathname = `/firimu${url.pathname.startsWith('/') ? '' : '/'}${url.pathname}`;
+      url.hostname = 'marketing2advertising.com';
+    }
+    return url.toString();
+  } catch {
+    return rawUrl;
+  }
+}
 function entryUrl(entry: FeedEntry): string {
   // Blogger feeds normally mark post links as rel="alternate" and
   // type="text/html", but custom-domain feeds can omit the type attribute.
@@ -94,7 +109,7 @@ function toItems(payload: FeedPayload, feed: typeof FEEDS[number]): CatalogueIte
       title,
       excerpt: cleanText(html).slice(0, 190),
       image: extractImage(entry),
-      url: entryUrl(entry),
+      url: normalizeCataloguePostUrl(entryUrl(entry), feed.key),
       published: entry.published?.$t || entry.updated?.$t || '',
       labels,
       kind: feed.kind,
@@ -219,7 +234,7 @@ export const MoviesSeriesScreen: React.FC<{ initialKind?: 'all' | CatalogueKind 
             {filteredItems.map((item, index) => (
               <React.Fragment key={item.id}>
                 <article className="group overflow-hidden rounded-xl border border-[#d8cba9] bg-[#faf6ec] shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
-                  <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
+                  <a href={item.url} className="block">
                     <div className="relative aspect-[2/3] overflow-hidden bg-[#d9d0bd]">
                       {item.image ? <img src={item.image} alt={item.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-[#8b8068]">{item.kind === 'movie' ? <Film size={38} /> : <Tv size={38} />}</div>}
                       <span className="absolute left-2 top-2 rounded-full bg-[#24231f]/90 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-[#e8cc88]">{item.kind === 'movie' ? 'Firimu' : 'Series'}</span>
@@ -233,7 +248,7 @@ export const MoviesSeriesScreen: React.FC<{ initialKind?: 'all' | CatalogueKind 
                     <p className="mt-1 line-clamp-3 min-h-10 text-[11px] leading-relaxed text-[#716b5d]">{item.excerpt || 'Open this post to read more.'}</p>
                     <div className="mt-3 flex items-center justify-between gap-2">
                       <span className="truncate text-[9px] font-semibold text-[#8b7545]">{item.source}</span>
-                      <a href={item.url} target="_blank" rel="noopener noreferrer" aria-label={`Open ${item.title}`} className="rounded-full bg-[#282720] p-2 text-[#e7c77f] hover:bg-[#b99750] hover:text-[#24231f]"><ExternalLink size={13} /></a>
+                      <a href={item.url} aria-label={`Open ${item.title}`} className="rounded-full bg-[#282720] p-2 text-[#e7c77f] hover:bg-[#b99750] hover:text-[#24231f]"><ExternalLink size={13} /></a>
                     </div>
                     {formatDate(item.published) && <p className="mt-2 text-[9px] text-[#9a9383]">{formatDate(item.published)}</p>}
                   </div>
